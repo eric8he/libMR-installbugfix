@@ -1,11 +1,22 @@
 from setuptools import setup
 from setuptools.extension import Extension
-import numpy
+import sys
+import subprocess
+
+def install_package(package):
+    subprocess.check_call([sys.executable, "-m", "pip", "install", package])
+
+try:
+    import numpy
+except ImportError:
+    install_package("numpy")
+    import numpy
 
 try:
     from Cython.Build import cythonize
 except ImportError:
-    raise ImportError("You must have Cython >=0.17 to build LibMR's python bindings!")
+    install_package("cython")
+    from Cython.Build import cythonize
 
 setup(name='libmr',
       ext_modules = __import__("Cython").Build.cythonize(Extension('libmr',[
